@@ -1,19 +1,21 @@
 <?php namespace BookStack\Providers;
 
 use Blade;
-use BookStack\Entities\Book;
-use BookStack\Entities\Bookshelf;
+use BookStack\Auth\Access\SocialAuthService;
+use BookStack\Entities\Models\Book;
+use BookStack\Entities\Models\Bookshelf;
 use BookStack\Entities\BreadcrumbsViewComposer;
-use BookStack\Entities\Chapter;
-use BookStack\Entities\Page;
+use BookStack\Entities\Models\Chapter;
+use BookStack\Entities\Models\Page;
 use BookStack\Settings\Setting;
 use BookStack\Settings\SettingService;
+use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Socialite\Contracts\Factory as SocialiteFactory;
 use Schema;
 use URL;
-use Validator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -32,28 +34,9 @@ class AppServiceProvider extends ServiceProvider
             URL::forceScheme($isHttps ? 'https' : 'http');
         }
 
-        // Custom validation methods
-        Validator::extend('image_extension', function ($attribute, $value, $parameters, $validator) {
-            $validImageExtensions = ['png', 'jpg', 'jpeg', 'gif', 'webp'];
-            return in_array(strtolower($value->getClientOriginalExtension()), $validImageExtensions);
-        });
-
-        Validator::extend('no_double_extension', function ($attribute, $value, $parameters, $validator) {
-            $uploadName = $value->getClientOriginalName();
-            return substr_count($uploadName, '.') < 2;
-        });
-
         // Custom blade view directives
         Blade::directive('icon', function ($expression) {
             return "<?php echo icon($expression); ?>";
-        });
-
-        Blade::directive('exposeTranslations', function ($expression) {
-            return "<?php \$__env->startPush('translations'); ?>" .
-                "<?php foreach({$expression} as \$key): ?>" .
-                '<meta name="translation" key="<?php echo e($key); ?>" value="<?php echo e(trans($key)); ?>">' . "\n" .
-                "<?php endforeach; ?>" .
-                '<?php $__env->stopPush(); ?>';
         });
 
         // Allow longer string lengths after upgrade to utf8mb4
@@ -79,7 +62,11 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->singleton(SettingService::class, function ($app) {
-            return new SettingService($app->make(Setting::class), $app->make('Illuminate\Contracts\Cache\Repository'));
+            return new SettingService($app->make(Setting::class), $app->make(Repository::class));
+        });
+
+        $this->app->singleton(SocialAuthService::class, function($app) {
+            return new SocialAuthService($app->make(SocialiteFactory::class));
         });
     }
 }

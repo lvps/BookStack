@@ -1,7 +1,7 @@
 <?php namespace Tests\Entity;
 
-use BookStack\Entities\Managers\PageContent;
-use BookStack\Entities\Page;
+use BookStack\Entities\Tools\PageContent;
+use BookStack\Entities\Models\Page;
 use Tests\TestCase;
 
 class PageContentTest extends TestCase
@@ -159,6 +159,72 @@ class PageContentTest extends TestCase
 
     }
 
+    public function test_javascript_uri_links_are_removed()
+    {
+        $checks = [
+            '<a id="xss" href="javascript:alert(document.cookie)>Click me</a>',
+            '<a id="xss" href="javascript: alert(document.cookie)>Click me</a>'
+        ];
+
+        $this->asEditor();
+        $page = Page::first();
+
+        foreach ($checks as $check) {
+            $page->html = $check;
+            $page->save();
+
+            $pageView = $this->get($page->getUrl());
+            $pageView->assertStatus(200);
+            $pageView->assertElementNotContains('.page-content', '<a id="xss">');
+            $pageView->assertElementNotContains('.page-content', 'href=javascript:');
+        }
+    }
+    public function test_form_actions_with_javascript_are_removed()
+    {
+        $checks = [
+            '<form><input id="xss" type=submit formaction=javascript:alert(document.domain) value=Submit><input></form>',
+            '<form ><button id="xss" formaction=javascript:alert(document.domain)>Click me</button></form>',
+            '<form id="xss" action=javascript:alert(document.domain)><input type=submit value=Submit></form>'
+        ];
+
+        $this->asEditor();
+        $page = Page::first();
+
+        foreach ($checks as $check) {
+            $page->html = $check;
+            $page->save();
+
+            $pageView = $this->get($page->getUrl());
+            $pageView->assertStatus(200);
+            $pageView->assertElementNotContains('.page-content', '<button id="xss"');
+            $pageView->assertElementNotContains('.page-content', '<input id="xss"');
+            $pageView->assertElementNotContains('.page-content', '<form id="xss"');
+            $pageView->assertElementNotContains('.page-content', 'action=javascript:');
+            $pageView->assertElementNotContains('.page-content', 'formaction=javascript:');
+        }
+    }
+    
+    public function test_metadata_redirects_are_removed()
+    {
+        $checks = [
+            '<meta http-equiv="refresh" content="0; url=//external_url">',
+        ];
+
+        $this->asEditor();
+        $page = Page::first();
+
+        foreach ($checks as $check) {
+            $page->html = $check;
+            $page->save();
+
+            $pageView = $this->get($page->getUrl());
+            $pageView->assertStatus(200);
+            $pageView->assertElementNotContains('.page-content', '<meta>');
+            $pageView->assertElementNotContains('.page-content', '</meta>');
+            $pageView->assertElementNotContains('.page-content', 'content=');
+            $pageView->assertElementNotContains('.page-content', 'external_url');
+        }
+    }
     public function test_page_inline_on_attributes_removed_by_default()
     {
         $this->asEditor();
@@ -353,5 +419,64 @@ class PageContentTest extends TestCase
 
         $page->refresh();
         $this->assertEquals('"Hello & welcome"', $page->text);
+    }
+
+    public function test_page_markdown_table_rendering()
+    {
+        $this->asEditor();
+        $page = Page::query()->first();
+
+        $content = '| Syntax      | Description |
+| ----------- | ----------- |
+| Header      | Title       |
+| Paragraph   | Text        |';
+        $this->put($page->getUrl(), [
+            'name' => $page->name,  'markdown' => $content,
+            'html' => '', 'summary' => ''
+        ]);
+
+        $page->refresh();
+        $this->assertStringContainsString('</tbody>', $page->html);
+
+        $pageView = $this->get($page->getUrl());
+        $pageView->assertElementExists('.page-content table tbody td');
+    }
+
+    public function test_page_markdown_task_list_rendering()
+    {
+        $this->asEditor();
+        $page = Page::query()->first();
+
+        $content = '- [ ] Item a
+- [x] Item b';
+        $this->put($page->getUrl(), [
+            'name' => $page->name,  'markdown' => $content,
+            'html' => '', 'summary' => ''
+        ]);
+
+        $page->refresh();
+        $this->assertStringContainsString('input', $page->html);
+        $this->assertStringContainsString('type="checkbox"', $page->html);
+
+        $pageView = $this->get($page->getUrl());
+        $pageView->assertElementExists('.page-content input[type=checkbox]');
+    }
+
+    public function test_page_markdown_strikethrough_rendering()
+    {
+        $this->asEditor();
+        $page = Page::query()->first();
+
+        $content = '~~some crossed out text~~';
+        $this->put($page->getUrl(), [
+            'name' => $page->name,  'markdown' => $content,
+            'html' => '', 'summary' => ''
+        ]);
+
+        $page->refresh();
+        $this->assertStringMatchesFormat('%A<s%A>some crossed out text</s>%A', $page->html);
+
+        $pageView = $this->get($page->getUrl());
+        $pageView->assertElementExists('.page-content p > s');
     }
 }

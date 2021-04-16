@@ -19,17 +19,17 @@ return [
     // private configuration variables so should remain disabled in public.
     'debug' => env('APP_DEBUG', false),
 
-    // Set the default view type for various lists. Can be overridden by user preferences.
-    // These will be used for public viewers and users that have not set a preference.
-    'views' => [
-        'books' => env('APP_VIEWS_BOOKS', 'list'),
-        'bookshelves' => env('APP_VIEWS_BOOKSHELVES', 'grid'),
-    ],
-
     // The number of revisions to keep in the database.
     // Once this limit is reached older revisions will be deleted.
     // If set to false then a limit will not be enforced.
     'revision_limit' => env('REVISION_LIMIT', 50),
+
+    // The number of days that content will remain in the recycle bin before
+    // being considered for auto-removal. It is not a guarantee that content will
+    // be removed after this time.
+    // Set to 0 for no recycle bin functionality.
+    // Set to -1 for unlimited recycle bin lifetime.
+    'recycle_bin_lifetime' => env('RECYCLE_BIN_LIFETIME', 30),
 
     // Allow <script> tags to entered within page content.
     // <script> tags are escaped by default.
@@ -45,6 +45,10 @@ return [
     // and used by BookStack in URL generation.
     'url' => env('APP_URL', '') === 'http://bookstack.dev' ? '' : env('APP_URL', ''),
 
+    // A list of hosts that BookStack can be iframed within.
+    // Space separated if multiple. BookStack host domain is auto-inferred.
+    'iframe_hosts' => env('ALLOWED_IFRAME_HOSTS', null),
+
     // Application timezone for back-end date functions.
     'timezone' => env('APP_TIMEZONE', 'UTC'),
 
@@ -52,7 +56,7 @@ return [
     'locale' => env('APP_LANG', 'en'),
 
     // Locales available
-    'locales' => ['en', 'ar', 'bg', 'cs', 'da', 'de', 'de_informal', 'es', 'es_AR', 'fa', 'fr', 'he', 'hu', 'it', 'ja', 'ko', 'nl', 'pt', 'pt_BR', 'sk', 'sl', 'sv', 'pl',  'ru', 'th', 'tr', 'uk', 'vi', 'zh_CN', 'zh_TW',],
+    'locales' => ['en', 'ar', 'bg', 'bs', 'ca', 'cs', 'da', 'de', 'de_informal', 'es', 'es_AR', 'fa', 'fr', 'he', 'hu', 'id', 'it', 'ja', 'ko', 'lv', 'nl', 'nb', 'pt', 'pt_BR', 'sk', 'sl', 'sv', 'pl',  'ru', 'th', 'tr', 'uk', 'vi', 'zh_CN', 'zh_TW',],
 
     //  Application Fallback Locale
     'fallback_locale' => 'en',
@@ -111,12 +115,14 @@ return [
         BookStack\Providers\TranslationServiceProvider::class,
 
         // BookStack custom service providers
+        BookStack\Providers\ThemeServiceProvider::class,
         BookStack\Providers\AuthServiceProvider::class,
         BookStack\Providers\AppServiceProvider::class,
         BookStack\Providers\BroadcastServiceProvider::class,
         BookStack\Providers\EventServiceProvider::class,
         BookStack\Providers\RouteServiceProvider::class,
         BookStack\Providers\CustomFacadeProvider::class,
+        BookStack\Providers\CustomValidationServiceProvider::class,
     ],
 
     /*
@@ -178,10 +184,10 @@ return [
 
         // Custom BookStack
         'Activity' => BookStack\Facades\Activity::class,
-        'Setting'  => BookStack\Facades\Setting::class,
         'Views'    => BookStack\Facades\Views::class,
         'Images'   => BookStack\Facades\Images::class,
         'Permissions' => BookStack\Facades\Permissions::class,
+        'Theme'    => BookStack\Facades\Theme::class,
 
     ],
 

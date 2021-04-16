@@ -78,7 +78,6 @@ return [
         'string'  => ':attribute skal mindst være :min tegn.',
         'array'   => ':attribute skal have mindst :min elementer.',
     ],
-    'no_double_extension'  => ':attribute må kun indeholde én filtype.',
     'not_in'               => 'Den valgte :attribute er ikke gyldig.',
     'not_regex'            => ':attribute-formatet er ugyldigt.',
     'numeric'              => ':attribute skal være et tal.',
@@ -90,6 +89,7 @@ return [
     'required_without'     => ':attribute skal udfyldes når :values ikke er udfyldt.',
     'required_without_all' => ':attribute skal udfyldes når ingen af :values er udfyldt.',
     'same'                 => ':attribute og :other skal være ens.',
+    'safe_url'             => 'The provided link may not be safe.',
     'size'                 => [
         'numeric' => ':attribute skal være :size.',
         'file'    => ':attribute skal være :size kilobytes.',

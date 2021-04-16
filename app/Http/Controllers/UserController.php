@@ -1,13 +1,17 @@
 <?php namespace BookStack\Http\Controllers;
 
+use BookStack\Actions\ActivityType;
 use BookStack\Auth\Access\SocialAuthService;
 use BookStack\Auth\Access\UserInviteService;
 use BookStack\Auth\User;
 use BookStack\Auth\UserRepo;
+use BookStack\Exceptions\ImageUploadException;
 use BookStack\Exceptions\UserUpdateException;
 use BookStack\Uploads\ImageRepo;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class UserController extends Controller
 {
@@ -26,7 +30,6 @@ class UserController extends Controller
         $this->userRepo = $userRepo;
         $this->inviteService = $inviteService;
         $this->imageRepo = $imageRepo;
-        parent::__construct();
     }
 
     /**
@@ -41,6 +44,7 @@ class UserController extends Controller
             'sort' => $request->get('sort', 'name'),
         ];
         $users = $this->userRepo->getAllUsersPaginatedAndSorted(20, $listDetails);
+
         $this->setPageTitle(trans('settings.users'));
         $users->appends($listDetails);
         return view('users.index', ['users' => $users, 'listDetails' => $listDetails]);
@@ -60,7 +64,7 @@ class UserController extends Controller
     /**
      * Store a newly created user in storage.
      * @throws UserUpdateException
-     * @throws \Illuminate\Validation\ValidationException
+     * @throws ValidationException
      */
     public function store(Request $request)
     {
@@ -89,6 +93,7 @@ class UserController extends Controller
             $user->external_auth_id = $request->get('external_auth_id');
         }
 
+        $user->refreshSlug();
         $user->save();
 
         if ($sendInvite) {
@@ -102,6 +107,7 @@ class UserController extends Controller
 
         $this->userRepo->downloadAndAssignUserAvatar($user);
 
+        $this->logActivity(ActivityType::USER_CREATE, $user);
         return redirect('/settings/users');
     }
 
@@ -130,8 +136,8 @@ class UserController extends Controller
     /**
      * Update the specified user in storage.
      * @throws UserUpdateException
-     * @throws \BookStack\Exceptions\ImageUploadException
-     * @throws \Illuminate\Validation\ValidationException
+     * @throws ImageUploadException
+     * @throws ValidationException
      */
     public function update(Request $request, int $id)
     {
@@ -153,6 +159,11 @@ class UserController extends Controller
         // Email updates
         if (userCan('users-manage') && $request->filled('email')) {
             $user->email = $request->get('email');
+        }
+
+        // Refresh the slug if the user's name has changed
+        if ($user->isDirty('name')) {
+            $user->refreshSlug();
         }
 
         // Role updates
@@ -187,13 +198,14 @@ class UserController extends Controller
             $user->image_id = $image->id;
         }
 
-        // Delete the profile image if set to
+        // Delete the profile image if reset option is in request
         if ($request->has('profile_image_reset')) {
             $this->imageRepo->destroyImage($user->avatar);
         }
 
         $user->save();
         $this->showSuccessNotification(trans('settings.users_edit_success'));
+        $this->logActivity(ActivityType::USER_UPDATE, $user);
 
         $redirectUrl = userCan('users-manage') ? '/settings/users' : ('/settings/users/' . $user->id);
         return redirect($redirectUrl);
@@ -213,14 +225,15 @@ class UserController extends Controller
 
     /**
      * Remove the specified user from storage.
-     * @throws \Exception
+     * @throws Exception
      */
-    public function destroy(int $id)
+    public function destroy(Request $request, int $id)
     {
         $this->preventAccessInDemoMode();
         $this->checkPermissionOrCurrentUser('users-manage', $id);
 
         $user = $this->userRepo->getById($id);
+        $newOwnerId = $request->get('new_owner_id', null);
 
         if ($this->userRepo->isOnlyAdmin($user)) {
             $this->showErrorNotification(trans('errors.users_cannot_delete_only_admin'));
@@ -232,29 +245,11 @@ class UserController extends Controller
             return redirect($user->getEditUrl());
         }
 
-        $this->userRepo->destroy($user);
+        $this->userRepo->destroy($user, $newOwnerId);
         $this->showSuccessNotification(trans('settings.users_delete_success'));
+        $this->logActivity(ActivityType::USER_DELETE, $user);
 
         return redirect('/settings/users');
-    }
-
-    /**
-     * Show the user profile page
-     */
-    public function showProfilePage($id)
-    {
-        $user = $this->userRepo->getById($id);
-
-        $userActivity = $this->userRepo->getActivity($user);
-        $recentlyCreated = $this->userRepo->getRecentlyCreated($user, 5);
-        $assetCounts = $this->userRepo->getAssetCounts($user);
-
-        return view('users.profile', [
-            'user' => $user,
-            'activity' => $userActivity,
-            'recentlyCreated' => $recentlyCreated,
-            'assetCounts' => $assetCounts
-        ]);
     }
 
     /**
@@ -305,7 +300,7 @@ class UserController extends Controller
      */
     public function changeSort(Request $request, string $id, string $type)
     {
-        $validSortTypes = ['books', 'bookshelves'];
+        $validSortTypes = ['books', 'bookshelves', 'shelf_books'];
         if (!in_array($type, $validSortTypes)) {
             return redirect()->back(500);
         }
@@ -348,7 +343,7 @@ class UserController extends Controller
         $this->checkPermissionOrCurrentUser('users-manage', $userId);
 
         $sort = $request->get('sort');
-        if (!in_array($sort, ['name', 'created_at', 'updated_at'])) {
+        if (!in_array($sort, ['name', 'created_at', 'updated_at', 'default'])) {
             $sort = 'name';
         }
 

@@ -1,9 +1,13 @@
 <?php namespace BookStack\Auth\Access;
 
+use BookStack\Actions\ActivityType;
 use BookStack\Auth\SocialAccount;
 use BookStack\Auth\User;
 use BookStack\Auth\UserRepo;
 use BookStack\Exceptions\UserRegistrationException;
+use BookStack\Facades\Activity;
+use BookStack\Facades\Theme;
+use BookStack\Theming\ThemeEvents;
 use Exception;
 
 class RegistrationService
@@ -68,6 +72,9 @@ class RegistrationService
             $newUser->socialAccounts()->save($socialAccount);
         }
 
+        Activity::add(ActivityType::AUTH_REGISTER, $socialAccount ?? $newUser);
+        Theme::dispatch(ThemeEvents::AUTH_REGISTER, $socialAccount ? $socialAccount->driver : auth()->getDefaultDriver(), $newUser);
+
         // Start email confirmation flow if required
         if ($this->emailConfirmationService->confirmationRequired() && !$emailConfirmed) {
             $newUser->save();
@@ -79,7 +86,6 @@ class RegistrationService
                 $message = trans('auth.email_confirm_send_error');
                 throw new UserRegistrationException($message, '/register/confirm');
             }
-
         }
 
         return $newUser;
@@ -105,5 +111,4 @@ class RegistrationService
             throw new UserRegistrationException(trans('auth.registration_email_domain_invalid'), $redirect);
         }
     }
-
 }

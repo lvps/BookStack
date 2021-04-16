@@ -78,7 +78,6 @@ return [
         'string'  => ':attribute 至少为:min个字符。',
         'array'   => ':attribute 至少有:min项。',
     ],
-    'no_double_extension'  => ':attribute 必须具有一个扩展名。',
     'not_in'               => '选中的 :attribute 无效。',
     'not_regex'            => ':attribute 格式错误。',
     'numeric'              => ':attribute 必须是一个数。',
@@ -90,6 +89,7 @@ return [
     'required_without'     => '当:values不存在时，:attribute 字段是必需的。',
     'required_without_all' => '当:values均不存在时，:attribute 字段是必需的。',
     'same'                 => ':attribute 与 :other 必须匹配。',
+    'safe_url'             => '提供的链接可能不安全。',
     'size'                 => [
         'numeric' => ':attribute 必须为:size。',
         'file'    => ':attribute 必须为:size KB。',

@@ -4,7 +4,6 @@
  * Class Ldap
  * An object-orientated thin abstraction wrapper for common PHP LDAP functions.
  * Allows the standard LDAP functions to be mocked for testing.
- * @package BookStack\Services
  */
 class Ldap
 {
@@ -30,6 +29,14 @@ class Ldap
     public function setOption($ldapConnection, $option, $value)
     {
         return ldap_set_option($ldapConnection, $option, $value);
+    }
+
+    /**
+     * Start TLS on the given LDAP connection.
+     */
+    public function startTls($ldapConnection): bool
+    {
+        return ldap_start_tls($ldapConnection);
     }
 
     /**

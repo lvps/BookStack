@@ -78,7 +78,6 @@ return [
         'string'  => ':attribute, en az :min karakter içermelidir.',
         'array'   => ':attribute, en az :min öge içermelidir.',
     ],
-    'no_double_extension'  => ':attribute, sadece tek bir dosya tipinde olmalıdır.',
     'not_in'               => 'Seçili :attribute geçersiz.',
     'not_regex'            => ':attribute formatı geçersiz.',
     'numeric'              => ':attribute, bir sayı olmalıdır.',
@@ -90,6 +89,7 @@ return [
     'required_without'     => ':values değerinin bulunmuyor olması, :attribute alanını zorunlu kılar.',
     'required_without_all' => ':values değerlerinden hiçbirinin bulunmuyor olması, :attribute alanını zorunlu kılar.',
     'same'                 => ':attribute ve :other eşleşmelidir.',
+    'safe_url'             => 'Sağlanan bağlantı güvenli olmayabilir.',
     'size'                 => [
         'numeric' => ':attribute, :size boyutunda olmalıdır.',
         'file'    => ':attribute, :size kilobayt olmalıdır.',

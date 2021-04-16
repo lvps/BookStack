@@ -3,7 +3,7 @@
  */
 
 header .grid {
-  grid-template-columns: auto min-content auto;
+  grid-template-columns: minmax(max-content, 2fr) 1fr minmax(max-content, 2fr);
 }
 
 @include smaller-than($l) {
@@ -77,9 +77,6 @@ header {
 }
 
 
-.header-search {
-  display: inline-block;
-}
 header .search-box {
   display: inline-block;
   margin-top: 10px;
@@ -269,10 +266,10 @@ header .search-box {
   }
 }
 
-.breadcrumb-listing {
+.dropdown-search {
   position: relative;
-  .breadcrumb-listing-toggle {
-    padding: 6px;
+  .dropdown-search-toggle {
+    padding: $-xs;
     border: 1px solid transparent;
     border-radius: 4px;
     &:hover {
@@ -284,51 +281,11 @@ header .search-box {
   }
 }
 
-.breadcrumb-listing-dropdown {
-  box-shadow: $bs-med;
-  overflow: hidden;
-  min-height: 100px;
-  width: 240px;
-  display: none;
-  position: absolute;
-  z-index: 80;
-  right: -$-m;
-  @include rtl {
-    right: auto;
-    left: -$-m;
-  }
-  .breadcrumb-listing-search .svg-icon {
-    position: absolute;
-    left: $-s;
-    @include rtl {
-      right: $-s;
-      left: auto;
-    }
-    top: 11px;
-    fill: #888;
-    pointer-events: none;
-  }
-  .breadcrumb-listing-entity-list {
-    max-height: 400px;
-    overflow-y: scroll;
-    text-align: start;
-  }
-  input {
-    padding-inline-start: $-xl;
-    border-radius: 0;
-    border: 0;
-    border-bottom: 1px solid #DDD;
-  }
-}
-
-@include smaller-than($m) {
-  .breadcrumb-listing-dropdown {
-    position: fixed;
-    right: auto;
-    left: $-m;
-  }
-  .breadcrumb-listing-dropdown .breadcrumb-listing-entity-list {
-    max-height: 240px;
+.dropdown-search-toggle.compact {
+  padding: $-xxs $-xs;
+  .avatar {
+    height: 22px;
+    width: 22px;
   }
 }
 

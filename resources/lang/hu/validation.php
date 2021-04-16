@@ -78,7 +78,6 @@ return [
         'string'  => ':attribute legalább :min karakter kell legyen.',
         'array'   => ':attribute legalább :min elem kell legyen.',
     ],
-    'no_double_extension'  => ':attribute csak egy fájlkiterjesztéssel rendelkezhet.',
     'not_in'               => 'A kiválasztott :attribute érvénytelen.',
     'not_regex'            => ':attribute formátuma érvénytelen.',
     'numeric'              => ':attribute szám kell legyen.',
@@ -90,6 +89,7 @@ return [
     'required_without'     => ':attribute mező kötelező ha :values nincs beállítva.',
     'required_without_all' => ':attribute mező kötelező ha egyik :values sincs beállítva.',
     'same'                 => ':attribute és :other értékének egyeznie kell.',
+    'safe_url'             => 'The provided link may not be safe.',
     'size'                 => [
         'numeric' => ':attribute :size méretű kell legyen.',
         'file'    => ':attribute :size kilobájt méretű kell legyen.',

@@ -1,9 +1,9 @@
 <?php namespace BookStack\Http\Controllers;
 
 use Activity;
-use BookStack\Entities\Book;
-use BookStack\Entities\Managers\PageContent;
-use BookStack\Entities\Page;
+use BookStack\Entities\Models\Book;
+use BookStack\Entities\Tools\PageContent;
+use BookStack\Entities\Models\Page;
 use BookStack\Entities\Repos\BookRepo;
 use BookStack\Entities\Repos\BookshelfRepo;
 use Illuminate\Http\Response;
@@ -14,7 +14,6 @@ class HomeController extends Controller
 
     /**
      * Display the homepage.
-     * @return Response
      */
     public function index()
     {
@@ -22,17 +21,24 @@ class HomeController extends Controller
         $draftPages = [];
 
         if ($this->isSignedIn()) {
-            $draftPages = Page::visible()->where('draft', '=', true)
+            $draftPages = Page::visible()
+                ->where('draft', '=', true)
                 ->where('created_by', '=', user()->id)
-                ->orderBy('updated_at', 'desc')->take(6)->get();
+                ->orderBy('updated_at', 'desc')
+                ->with('book')
+                ->take(6)
+                ->get();
         }
 
         $recentFactor = count($draftPages) > 0 ? 0.5 : 1;
         $recents = $this->isSignedIn() ?
-              Views::getUserRecentlyViewed(12*$recentFactor, 0)
+              Views::getUserRecentlyViewed(12*$recentFactor, 1)
             : Book::visible()->orderBy('created_at', 'desc')->take(12 * $recentFactor)->get();
-        $recentlyUpdatedPages = Page::visible()->where('draft', false)
-            ->orderBy('updated_at', 'desc')->take(12)->get();
+        $recentlyUpdatedPages = Page::visible()->with('book')
+            ->where('draft', false)
+            ->orderBy('updated_at', 'desc')
+            ->take(12)
+            ->get();
 
         $homepageOptions = ['default', 'books', 'bookshelves', 'page'];
         $homepageOption = setting('app-homepage-type', 'default');
@@ -50,7 +56,7 @@ class HomeController extends Controller
         // Add required list ordering & sorting for books & shelves views.
         if ($homepageOption === 'bookshelves' || $homepageOption === 'books') {
             $key = $homepageOption;
-            $view = setting()->getForCurrentUser($key . '_view_type', config('app.views.' . $key));
+            $view = setting()->getForCurrentUser($key . '_view_type');
             $sort = setting()->getForCurrentUser($key . '_sort', 'name');
             $order = setting()->getForCurrentUser($key . '_sort_order', 'asc');
 
@@ -104,15 +110,16 @@ class HomeController extends Controller
 
     /**
      * Show the view for /robots.txt
-     * @return $this
      */
     public function getRobots()
     {
         $sitePublic = setting('app-public', false);
         $allowRobots = config('app.allow_robots');
+
         if ($allowRobots === null) {
             $allowRobots = $sitePublic;
         }
+
         return response()
             ->view('common.robots', ['allowRobots' => $allowRobots])
             ->header('Content-Type', 'text/plain');

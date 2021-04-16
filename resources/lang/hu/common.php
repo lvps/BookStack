@@ -33,7 +33,7 @@ return [
     'copy' => 'Másolás',
     'reply' => 'Válasz',
     'delete' => 'Törlés',
-    'delete_confirm' => 'Confirm Deletion',
+    'delete_confirm' => 'Törlés megerősítése',
     'search' => 'Keresés',
     'search_clear' => 'Keresés törlése',
     'reset' => 'Visszaállítás',
@@ -47,6 +47,7 @@ return [
     'sort_ascending' => 'Növekvő sorrend',
     'sort_descending' => 'Csökkenő sorrend',
     'sort_name' => 'Név',
+    'sort_default' => 'Default',
     'sort_created_at' => 'Létrehozás dátuma',
     'sort_updated_at' => 'Frissítés dátuma',
 
@@ -67,8 +68,8 @@ return [
     'profile_menu' => 'Profil menü',
     'view_profile' => 'Profil megtekintése',
     'edit_profile' => 'Profil szerkesztése',
-    'dark_mode' => 'Dark Mode',
-    'light_mode' => 'Light Mode',
+    'dark_mode' => 'Sötét mód',
+    'light_mode' => 'Világos mód',
 
     // Layout tabs
     'tab_info' => 'Információ',
@@ -77,4 +78,9 @@ return [
     // Email Content
     'email_action_help' => 'Probléma esetén a lenti ":actionText" gombra kell kattintani, majd ki kell másolni a lenti webcímet és be kell illeszteni egy böngészőbe:',
     'email_rights' => 'Minden jog fenntartva',
+
+    // Footer Link Options
+    // Not directly used but available for convenience to users.
+    'privacy_policy' => 'Privacy Policy',
+    'terms_of_service' => 'Terms of Service',
 ];

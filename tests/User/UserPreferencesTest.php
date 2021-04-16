@@ -1,4 +1,4 @@
-<?php namespace Test\User;
+<?php namespace Tests\User;
 
 use Tests\TestCase;
 
@@ -91,5 +91,18 @@ class UserPreferencesTest extends TestCase
         $home->assertElementExists('.dark-mode');
         $home->assertDontSee('Dark Mode');
         $home->assertSee('Light Mode');
+    }
+
+    public function test_dark_mode_defaults_to_config_option()
+    {
+        config()->set('setting-defaults.user.dark-mode-enabled', false);
+        $this->assertEquals(false, setting()->getForCurrentUser('dark-mode-enabled'));
+        $home = $this->get('/login');
+        $home->assertElementNotExists('.dark-mode');
+
+        config()->set('setting-defaults.user.dark-mode-enabled', true);
+        $this->assertEquals(true, setting()->getForCurrentUser('dark-mode-enabled'));
+        $home = $this->get('/login');
+        $home->assertElementExists('.dark-mode');
     }
 }

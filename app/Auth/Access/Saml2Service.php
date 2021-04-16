@@ -1,9 +1,13 @@
 <?php namespace BookStack\Auth\Access;
 
+use BookStack\Actions\ActivityType;
 use BookStack\Auth\User;
 use BookStack\Exceptions\JsonDebugException;
 use BookStack\Exceptions\SamlException;
 use BookStack\Exceptions\UserRegistrationException;
+use BookStack\Facades\Activity;
+use BookStack\Facades\Theme;
+use BookStack\Theming\ThemeEvents;
 use Exception;
 use Illuminate\Support\Str;
 use OneLogin\Saml2\Auth;
@@ -372,6 +376,8 @@ class Saml2Service extends ExternalAuthService
         }
 
         auth()->login($user);
+        Activity::add(ActivityType::AUTH_LOGIN, "saml2; {$user->logDescriptor()}");
+        Theme::dispatch(ThemeEvents::AUTH_LOGIN, 'saml2', $user);
         return $user;
     }
 }

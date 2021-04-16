@@ -33,7 +33,7 @@ return [
     'copy' => 'Копіювати',
     'reply' => 'Відповісти',
     'delete' => 'Видалити',
-    'delete_confirm' => 'Confirm Deletion',
+    'delete_confirm' => 'Підтвердити видалення',
     'search' => 'Шукати',
     'search_clear' => 'Очистити пошук',
     'reset' => 'Скинути',
@@ -47,6 +47,7 @@ return [
     'sort_ascending' => 'За зростанням',
     'sort_descending' => 'За спаданням',
     'sort_name' => 'Ім\'я',
+    'sort_default' => 'За замовчуванням',
     'sort_created_at' => 'Дата створення',
     'sort_updated_at' => 'Дата оновлення',
 
@@ -77,4 +78,9 @@ return [
     // Email Content
     'email_action_help' => 'Якщо у вас виникають проблеми при натисканні кнопки ":actionText", скопіюйте та вставте URL у свій веб-браузер:',
     'email_rights' => 'Всі права захищені',
+
+    // Footer Link Options
+    // Not directly used but available for convenience to users.
+    'privacy_policy' => 'Політика приватності',
+    'terms_of_service' => 'Умови використання',
 ];

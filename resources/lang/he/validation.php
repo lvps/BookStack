@@ -78,7 +78,6 @@ return [
         'string'  => 'שדה :attribute חייב להיות לפחות :min תווים.',
         'array'   => 'שדה :attribute חייב להיות לפחות :min פריטים.',
     ],
-    'no_double_extension'  => 'השדה :attribute חייב להיות בעל סיומת קובץ אחת בלבד.',
     'not_in'               => 'בחירת ה-:attribute אינה תקפה.',
     'not_regex'            => 'The :attribute format is invalid.',
     'numeric'              => 'שדה :attribute חייב להיות מספר.',
@@ -90,6 +89,7 @@ return [
     'required_without'     => 'שדה :attribute נחוץ כאשר :values לא בנמצא.',
     'required_without_all' => 'שדה :attribute נחוץ כאשר אף אחד מ-:values נמצאים.',
     'same'                 => 'שדה :attribute ו-:other חייבים להיות זהים.',
+    'safe_url'             => 'The provided link may not be safe.',
     'size'                 => [
         'numeric' => 'שדה :attribute חייב להיות :size.',
         'file'    => 'שדה :attribute חייב להיות :size קילובייטים.',

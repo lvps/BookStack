@@ -13,7 +13,7 @@
             <div class="mobile-menu-toggle hide-over-l">@icon('more')</div>
         </div>
 
-        <div class="header-search hide-under-l">
+        <div class="flex-container-row justify-center hide-under-l">
             @if (hasAppAccess())
             <form action="{{ url('/search') }}" method="GET" class="search-box" role="search">
                 <button id="header-search-box-button" type="submit" aria-label="{{ trans('common.search') }}" tabindex="-1">@icon('search') </button>
@@ -29,7 +29,7 @@
                 <div class="links text-center">
                     @if (hasAppAccess())
                         <a class="hide-over-l" href="{{ url('/search') }}">@icon('search'){{ trans('common.search') }}</a>
-                        @if(userCanOnAny('view', \BookStack\Entities\Bookshelf::class) || userCan('bookshelf-view-all') || userCan('bookshelf-view-own'))
+                        @if(userCanOnAny('view', \BookStack\Entities\Models\Bookshelf::class) || userCan('bookshelf-view-all') || userCan('bookshelf-view-own'))
                             <a href="{{ url('/shelves') }}">@icon('bookshelf'){{ trans('entities.shelves') }}</a>
                         @endif
                         <a href="{{ url('/books') }}">@icon('books'){{ trans('entities.books') }}</a>
@@ -58,10 +58,10 @@
                         </span>
                         <ul refs="dropdown@menu" class="dropdown-menu" role="menu">
                             <li>
-                                <a href="{{ url("/user/{$currentUser->id}") }}">@icon('user'){{ trans('common.view_profile') }}</a>
+                                <a href="{{ $currentUser->getProfileUrl() }}">@icon('user'){{ trans('common.view_profile') }}</a>
                             </li>
                             <li>
-                                <a href="{{ url("/settings/users/{$currentUser->id}") }}">@icon('edit'){{ trans('common.edit_profile') }}</a>
+                                <a href="{{ $currentUser->getEditUrl() }}">@icon('edit'){{ trans('common.edit_profile') }}</a>
                             </li>
                             <li>
                                 @if(config('auth.method') === 'saml2')

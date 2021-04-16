@@ -78,7 +78,6 @@ return [
         'string'  => ':attribute phải có tối thiểu :min ký tự.',
         'array'   => ':attribute phải có tối thiểu :min mục.',
     ],
-    'no_double_extension'  => ':attribute chỉ được có một định dạng mở rộng duy nhất.',
     'not_in'               => ':attribute đã chọn không hợp lệ.',
     'not_regex'            => 'Định dạng của :attribute không hợp lệ.',
     'numeric'              => ':attribute phải là một số.',
@@ -90,6 +89,7 @@ return [
     'required_without'     => 'Trường :attribute là bắt buộc khi :values không tồn tại.',
     'required_without_all' => 'Trường :attribute là bắt buộc khi không có bất cứ :values nào tồn tại.',
     'same'                 => ':attribute và :other phải trùng khớp với nhau.',
+    'safe_url'             => 'Đường dẫn cung cấp có thể không an toàn.',
     'size'                 => [
         'numeric' => ':attribute phải có cỡ :size.',
         'file'    => ':attribute phải có cỡ :size KB.',

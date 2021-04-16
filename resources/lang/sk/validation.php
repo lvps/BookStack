@@ -78,7 +78,6 @@ return [
         'string'  => ':attribute musí mať aspoň :min znakov.',
         'array'   => ':attribute musí mať aspoň :min položiek.',
     ],
-    'no_double_extension'  => 'The :attribute must only have a single file extension.',
     'not_in'               => 'Vybraný :attribute je neplatný.',
     'not_regex'            => 'The :attribute format is invalid.',
     'numeric'              => ':attribute musí byť číslo.',
@@ -90,6 +89,7 @@ return [
     'required_without'     => 'Políčko :attribute je povinné aj :values neexistuje.',
     'required_without_all' => 'Políčko :attribute je povinné ak ani jedno z :values neexistuje.',
     'same'                 => ':attribute a :other musia byť rovnaké.',
+    'safe_url'             => 'The provided link may not be safe.',
     'size'                 => [
         'numeric' => ':attribute musí byť :size.',
         'file'    => ':attribute musí mať :size kilobajtov.',

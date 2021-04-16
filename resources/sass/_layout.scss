@@ -95,6 +95,10 @@
   }
 }
 
+#content {
+  flex: 1 0 auto;
+}
+
 /**
  * Flexbox layout system
  */
@@ -150,26 +154,36 @@ body.flexbox {
 .justify-flex-end {
   justify-content: flex-end;
 }
+.justify-center {
+  justify-content: center;
+}
+.items-center {
+  align-items: center;
+}
 
 
 /**
  * Display and float utilities
  */
 .block {
-  display: block;
+  display: block !important;
   position: relative;
 }
 
 .inline {
-  display: inline;
+  display: inline !important;
 }
 
 .block.inline {
-  display: inline-block;
+  display: inline-block !important;
 }
 
 .hidden {
   display: none !important;
+}
+
+.fill-height {
+  height: 100%;
 }
 
 .float {
@@ -242,6 +256,7 @@ body.flexbox {
   .tri-layout-middle {
     grid-area: b;
     padding-top: $-m;
+    min-width: 0;
   }
 }
 @include smaller-than($xxl) {
@@ -269,6 +284,7 @@ body.flexbox {
     min-height: 50vh;
     overflow-y: scroll;
     overflow-x: hidden;
+    height: 100%;
     scrollbar-width: none;
     -ms-overflow-style: none;
     &::-webkit-scrollbar {

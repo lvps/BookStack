@@ -1,8 +1,8 @@
 <?php namespace Tests\Entity;
 
 use BookStack\Auth\User;
-use BookStack\Entities\Book;
-use BookStack\Entities\Bookshelf;
+use BookStack\Entities\Models\Book;
+use BookStack\Entities\Models\Bookshelf;
 use BookStack\Uploads\Image;
 use Illuminate\Support\Str;
 use Tests\TestCase;
@@ -59,7 +59,7 @@ class BookShelfTest extends TestCase
     public function test_book_not_visible_in_shelf_list_view_if_user_cant_view_shelf()
     {
         config()->set([
-            'app.views.bookshelves' => 'list',
+            'setting-defaults.user.bookshelves_view_type' => 'list',
         ]);
         $shelf = Bookshelf::query()->first();
         $book = $shelf->books()->first();
@@ -156,6 +156,47 @@ class BookShelfTest extends TestCase
         $resp->assertDontSee($shelf->getUrl('/permissions'));
     }
 
+    public function test_shelf_view_has_sort_control_that_defaults_to_default()
+    {
+        $shelf = Bookshelf::query()->first();
+        $resp = $this->asAdmin()->get($shelf->getUrl());
+        $resp->assertElementExists('form[action$="change-sort/shelf_books"]');
+        $resp->assertElementContains('form[action$="change-sort/shelf_books"] [aria-haspopup="true"]', 'Default');
+    }
+
+    public function test_shelf_view_sort_takes_action()
+    {
+        $shelf = Bookshelf::query()->whereHas('books')->with('books')->first();
+        $books = Book::query()->take(3)->get(['id', 'name']);
+        $books[0]->fill(['name' => 'bsfsdfsdfsd'])->save();
+        $books[1]->fill(['name' => 'adsfsdfsdfsd'])->save();
+        $books[2]->fill(['name' => 'hdgfgdfg'])->save();
+
+        // Set book ordering
+        $this->asAdmin()->put($shelf->getUrl(), [
+            'books' => $books->implode('id', ','),
+            'tags' => [], 'description' => 'abc', 'name' => 'abc'
+        ]);
+        $this->assertEquals(3, $shelf->books()->count());
+        $shelf->refresh();
+
+        $resp = $this->asEditor()->get($shelf->getUrl());
+        $resp->assertElementContains('.book-content a.grid-card', $books[0]->name, 1);
+        $resp->assertElementNotContains('.book-content a.grid-card', $books[0]->name, 3);
+
+        setting()->putUser($this->getEditor(), 'shelf_books_sort_order', 'desc');
+        $resp = $this->asEditor()->get($shelf->getUrl());
+        $resp->assertElementNotContains('.book-content a.grid-card', $books[0]->name, 1);
+        $resp->assertElementContains('.book-content a.grid-card', $books[0]->name, 3);
+
+        setting()->putUser($this->getEditor(), 'shelf_books_sort_order', 'desc');
+        setting()->putUser($this->getEditor(), 'shelf_books_sort', 'name');
+        $resp = $this->asEditor()->get($shelf->getUrl());
+        $resp->assertElementContains('.book-content a.grid-card', 'hdgfgdfg', 1);
+        $resp->assertElementContains('.book-content a.grid-card', 'bsfsdfsdfsd', 2);
+        $resp->assertElementContains('.book-content a.grid-card', 'adsfsdfsdfsd', 3);
+    }
+
     public function test_shelf_edit()
     {
         $shelf = Bookshelf::first();
@@ -222,16 +263,25 @@ class BookShelfTest extends TestCase
 
     public function test_shelf_delete()
     {
-        $shelf = Bookshelf::first();
-        $resp = $this->asEditor()->get($shelf->getUrl('/delete'));
-        $resp->assertSeeText('Delete Bookshelf');
-        $resp->assertSee("action=\"{$shelf->getUrl()}\"");
+        $shelf = Bookshelf::query()->whereHas('books')->first();
+        $this->assertNull($shelf->deleted_at);
+        $bookCount = $shelf->books()->count();
 
-        $resp = $this->delete($shelf->getUrl());
-        $resp->assertRedirect('/shelves');
-        $this->assertDatabaseMissing('bookshelves', ['id' => $shelf->id]);
-        $this->assertDatabaseMissing('bookshelves_books', ['bookshelf_id' => $shelf->id]);
-        $this->assertSessionHas('success');
+        $deleteViewReq = $this->asEditor()->get($shelf->getUrl('/delete'));
+        $deleteViewReq->assertSeeText('Are you sure you want to delete this bookshelf?');
+
+        $deleteReq = $this->delete($shelf->getUrl());
+        $deleteReq->assertRedirect(url('/shelves'));
+        $this->assertActivityExists('bookshelf_delete', $shelf);
+
+        $shelf->refresh();
+        $this->assertNotNull($shelf->deleted_at);
+
+        $this->assertTrue($shelf->books()->count() === $bookCount);
+        $this->assertTrue($shelf->deletions()->count() === 1);
+
+        $redirectReq = $this->get($deleteReq->baseResponse->headers->get('location'));
+        $redirectReq->assertNotificationContains('Bookshelf Successfully Deleted');
     }
 
     public function test_shelf_copy_permissions()

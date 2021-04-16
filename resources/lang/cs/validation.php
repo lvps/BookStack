@@ -78,7 +78,6 @@ return [
         'string'  => ':attribute musí být delší než :min znaků.',
         'array'   => ':attribute musí obsahovat více než :min prvků.',
     ],
-    'no_double_extension'  => ':attribute musí obsahovat pouze jednu příponu souboru.',
     'not_in'               => 'Zvolená hodnota pro :attribute je neplatná.',
     'not_regex'            => ':attribute musí být regulární výraz.',
     'numeric'              => ':attribute musí být číslo.',
@@ -90,6 +89,7 @@ return [
     'required_without'     => ':attribute musí být vyplněno pokud :values není vyplněno.',
     'required_without_all' => ':attribute musí být vyplněno pokud není žádné z :values zvoleno.',
     'same'                 => ':attribute a :other se musí shodovat.',
+    'safe_url'             => 'The provided link may not be safe.',
     'size'                 => [
         'numeric' => ':attribute musí být přesně :size.',
         'file'    => ':attribute musí mít přesně :size Kilobytů.',

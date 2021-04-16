@@ -78,7 +78,6 @@ return [
         'string'  => ':attribute должен быть минимум :min символов.',
         'array'   => ':attribute должен содержать хотя бы :min элементов.',
     ],
-    'no_double_extension'  => ':attribute должен иметь только одно расширение файла.',
     'not_in'               => 'Выбранный :attribute некорректен.',
     'not_regex'            => 'Формат :attribute некорректен.',
     'numeric'              => ':attribute должен быть числом.',
@@ -90,6 +89,7 @@ return [
     'required_without'     => ':attribute обязательное поле когда :values не установлены.',
     'required_without_all' => ':attribute обязательное поле когда ни одно из :values не установлены.',
     'same'                 => ':attribute и :other должны совпадать.',
+    'safe_url'             => 'Предоставленная ссылка может быть небезопасной.',
     'size'                 => [
         'numeric' => ':attribute должен быть :size.',
         'file'    => ':attribute должен быть :size килобайт.',

@@ -22,6 +22,7 @@ return [
     'meta_created_name' => 'Vytvorené :timeLength používateľom :user',
     'meta_updated' => 'Aktualizované :timeLength',
     'meta_updated_name' => 'Aktualizované :timeLength používateľom :user',
+    'meta_owned_name' => 'Owned by :user',
     'entity_select' => 'Entita vybraná',
     'images' => 'Obrázky',
     'my_recent_drafts' => 'Moje nedávne koncepty',
@@ -39,6 +40,7 @@ return [
     'permissions_intro' => 'Ak budú tieto oprávnenia povolené, budú mať prioritu pred oprávneniami roly.',
     'permissions_enable' => 'Povoliť vlastné oprávnenia',
     'permissions_save' => 'Uložiť oprávnenia',
+    'permissions_owner' => 'Owner',
 
     // Search
     'search_results' => 'Výsledky hľadania',
@@ -58,6 +60,7 @@ return [
     'search_permissions_set' => 'Oprávnenia',
     'search_created_by_me' => 'Vytvorené mnou',
     'search_updated_by_me' => 'Aktualizované mnou',
+    'search_owned_by_me' => 'Owned by me',
     'search_date_options' => 'Možnosti dátumu',
     'search_updated_before' => 'Aktualizované pred',
     'search_updated_after' => 'Aktualizované po',
@@ -146,8 +149,7 @@ return [
     'chapters_create' => 'Vytvoriť novú kapitolu',
     'chapters_delete' => 'Zmazať kapitolu',
     'chapters_delete_named' => 'Zmazať kapitolu :chapterName',
-    'chapters_delete_explain' => 'Toto zmaže kapitolu menom \':chapterName\', všetky stránky budú ostránené
-        a pridané priamo do rodičovskej knihy.',
+    'chapters_delete_explain' => 'This will delete the chapter with the name \':chapterName\'. All pages that exist within this chapter will also be deleted.',
     'chapters_delete_confirm' => 'Ste si istý, že chcete zmazať túto kapitolu?',
     'chapters_edit' => 'Upraviť kapitolu',
     'chapters_edit_named' => 'Upraviť kapitolu :chapterName',
@@ -209,6 +211,7 @@ return [
     'pages_revisions' => 'Revízie stránky',
     'pages_revisions_named' => 'Revízie stránky :pageName',
     'pages_revision_named' => 'Revízia stránky :pageName',
+    'pages_revision_restored_from' => 'Restored from #:id; :summary',
     'pages_revisions_created_by' => 'Vytvoril',
     'pages_revisions_date' => 'Dátum revízie',
     'pages_revisions_number' => '#',

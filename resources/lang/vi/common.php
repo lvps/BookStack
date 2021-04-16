@@ -33,7 +33,7 @@ return [
     'copy' => 'Sao chép',
     'reply' => 'Trả lời',
     'delete' => 'Xóa',
-    'delete_confirm' => 'Confirm Deletion',
+    'delete_confirm' => 'Xác nhận Xóa',
     'search' => 'Tìm kiếm',
     'search_clear' => 'Xoá tìm kiếm',
     'reset' => 'Thiết lập lại',
@@ -47,6 +47,7 @@ return [
     'sort_ascending' => 'Sắp xếp tăng dần',
     'sort_descending' => 'Sắp xếp giảm dần',
     'sort_name' => 'Tên',
+    'sort_default' => 'Default',
     'sort_created_at' => 'Ngày Tạo',
     'sort_updated_at' => 'Ngày cập nhật',
 
@@ -67,8 +68,8 @@ return [
     'profile_menu' => 'Menu Hồ sơ',
     'view_profile' => 'Xem Hồ sơ',
     'edit_profile' => 'Sửa Hồ sơ',
-    'dark_mode' => 'Dark Mode',
-    'light_mode' => 'Light Mode',
+    'dark_mode' => 'Chế độ Tối',
+    'light_mode' => 'Chế độ Sáng',
 
     // Layout tabs
     'tab_info' => 'Thông tin',
@@ -77,4 +78,9 @@ return [
     // Email Content
     'email_action_help' => 'Nếu bạn đang có vấn đề trong việc bấm nút ":actionText", sao chép và dán địa chỉ URL dưới đây vào trình duyệt web:',
     'email_rights' => 'Bản quyền đã được bảo hộ',
+
+    // Footer Link Options
+    // Not directly used but available for convenience to users.
+    'privacy_policy' => 'Privacy Policy',
+    'terms_of_service' => 'Terms of Service',
 ];

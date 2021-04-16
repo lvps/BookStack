@@ -38,7 +38,7 @@ function editorPaste(event, editor, wysiwygComponent) {
                 editor.dom.replace(newEl, id);
             }).catch(err => {
                 editor.dom.remove(id);
-                window.$events.emit('error', trans('errors.image_upload_error'));
+                window.$events.emit('error', wysiwygComponent.imageUploadErrorText);
                 console.log(err);
             });
         }, 10);
@@ -212,7 +212,7 @@ function codePlugin() {
             showPopup(editor);
         });
 
-        editor.on('SetContent', function () {
+        function parseCodeMirrorInstances() {
 
             // Recover broken codemirror instances
             $('.CodeMirrorContainer').filter((index ,elem) => {
@@ -231,12 +231,23 @@ function codePlugin() {
                     Code.wysiwygView(elem);
                 });
             });
+        }
+
+        editor.on('init', function() {
+            // Parse code mirror instances on init, but delay a little so this runs after
+            // initial styles are fetched into the editor.
+            parseCodeMirrorInstances();
+            // Parsed code mirror blocks when content is set but wait before setting this handler
+            // to avoid any init 'SetContent' events.
+            setTimeout(() => {
+                editor.on('SetContent', parseCodeMirrorInstances);
+            }, 200);
         });
 
     });
 }
 
-function drawIoPlugin(drawioUrl, isDarkMode, pageId) {
+function drawIoPlugin(drawioUrl, isDarkMode, pageId, wysiwygComponent) {
 
     let pageEditor = null;
     let currentNode = null;
@@ -280,7 +291,7 @@ function drawIoPlugin(drawioUrl, isDarkMode, pageId) {
                 pageEditor.dom.setAttrib(imgElem, 'src', img.url);
                 pageEditor.dom.setAttrib(currentNode, 'drawio-diagram', img.id);
             } catch (err) {
-                window.$events.emit('error', trans('errors.image_upload_error'));
+                window.$events.emit('error', wysiwygComponent.imageUploadErrorText);
                 console.log(err);
             }
             return;
@@ -295,7 +306,7 @@ function drawIoPlugin(drawioUrl, isDarkMode, pageId) {
                 pageEditor.dom.get(id).parentNode.setAttribute('drawio-diagram', img.id);
             } catch (err) {
                 pageEditor.dom.remove(id);
-                window.$events.emit('error', trans('errors.image_upload_error'));
+                window.$events.emit('error', wysiwygComponent.imageUploadErrorText);
                 console.log(err);
             }
         }, 5);
@@ -414,15 +425,15 @@ function listenForBookStackEditorEvents(editor) {
 
 class WysiwygEditor {
 
-
     setup() {
         this.elem = this.$el;
 
         this.pageId = this.$opts.pageId;
         this.textDirection = this.$opts.textDirection;
+        this.imageUploadErrorText = this.$opts.imageUploadErrorText;
         this.isDarkMode = document.documentElement.classList.contains('dark-mode');
 
-        this.plugins = "image table textcolor paste link autolink fullscreen code customhr autosave lists codeeditor media";
+        this.plugins = "image imagetools table textcolor paste link autolink fullscreen code customhr autosave lists codeeditor media";
         this.loadPlugins();
 
         this.tinyMceConfig = this.getTinyMceConfig();
@@ -437,7 +448,7 @@ class WysiwygEditor {
         const drawioUrlElem = document.querySelector('[drawio-url]');
         if (drawioUrlElem) {
             const url = drawioUrlElem.getAttribute('drawio-url');
-            drawIoPlugin(url, this.isDarkMode, this.pageId);
+            drawIoPlugin(url, this.isDarkMode, this.pageId, this);
             this.plugins += ' drawio';
         }
 

@@ -78,7 +78,6 @@ return [
         'string'  => ':attribute moet minstens :min karakters bevatten.',
         'array'   => ':attribute moet minstens :min items bevatten.',
     ],
-    'no_double_extension'  => ':attribute mag maar een enkele bestandsextensie hebben.',
     'not_in'               => ':attribute is ongeldig.',
     'not_regex'            => ':attribute formaat is ongeldig.',
     'numeric'              => ':attribute moet een getal zijn.',
@@ -90,6 +89,7 @@ return [
     'required_without'     => ':attribute veld is verplicht wanneer :values niet ingesteld is.',
     'required_without_all' => ':attribute veld is verplicht wanneer geen van :values ingesteld zijn.',
     'same'                 => ':attribute en :other moeten overeenkomen.',
+    'safe_url'             => 'The provided link may not be safe.',
     'size'                 => [
         'numeric' => ':attribute moet :size zijn.',
         'file'    => ':attribute moet :size kilobytes zijn.',
