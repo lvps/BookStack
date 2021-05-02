@@ -17,7 +17,12 @@ return [
     // if ldap, allow admin to enable/disable auto registration
     //  checked in Access call in /Auth/Acces/Guards/LdapSessionGuard.php
     //  [defaults to true/existing behaviour]
-    'auto-register' => env('AUTH_AUTO_REGISTER', true),
+    'auto_register' => boolval(env('AUTH_AUTO_REGISTER', true)),
+
+    // Use LDAP for account provisioning
+    // Allows use of syncldap command even with other authentication methods,
+    // to provision the user accounts
+    'ldap_provision' => boolval(env('AUTH_LDAP_PROVISION', false)),
 
     // Authentication Defaults
     // This option controls the default authentication "guard" and password

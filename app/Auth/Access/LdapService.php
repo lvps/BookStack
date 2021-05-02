@@ -360,6 +360,8 @@ class LdapService extends ExternalAuthService
     public function getAllUsers(string $filter = '')
     {
         $ldapConnection = $this->getConnection();
+        $this->bindSystemUser($ldapConnection);
+
         $followReferrals = $this->config['follow_referrals'] ? 1 : 0;
         $this->ldap->setOption($ldapConnection, LDAP_OPT_REFERRALS, $followReferrals);
 
@@ -371,8 +373,29 @@ class LdapService extends ExternalAuthService
             $userFilter = $this->config['sync_user_filter'];
         }
 
-        $usersLdap = $this->ldap->searchAndGetEntries($ldapConnection, $baseDn, $userFilter, array(config("services.ldap.id_attribute")));
+        $usersLdap = $this->ldap->searchAndGetEntries($ldapConnection, $baseDn, $userFilter, [config("services.ldap.id_attribute", "dn")]);
 
         return $usersLdap;
+    }
+
+    public function getAllGroups(string $filter = '')
+    {
+        $ldapConnection = $this->getConnection();
+        $this->bindSystemUser($ldapConnection);
+
+        $followReferrals = $this->config['follow_referrals'] ? 1 : 0;
+        $this->ldap->setOption($ldapConnection, LDAP_OPT_REFERRALS, $followReferrals);
+
+        $baseDn = env('LDAP_ROLE_BASE_DN');
+
+        if ($filter) {
+            $groupFilter = $filter;
+        } else {
+            $groupFilter = env('LDAP_SYNC_ROLE_FILTER');
+        }
+
+        $groupLdap = $this->ldap->searchAndGetEntries($ldapConnection, $baseDn, $groupFilter, [config("services.ldap.id_attribute"), "member", "cn"]);
+
+        return $groupLdap;
     }
 }

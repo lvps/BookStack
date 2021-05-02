@@ -79,7 +79,7 @@ class LdapSessionGuard extends ExternalBaseSessionGuard
 
         if (is_null($user)) {
             try {
-                if (!config("auth.auth_register")) {
+                if (!config("auth.auto_register")) {
                     $user = $this->createNewFromLdapAndCreds($userDetails, $credentials);
                 } else {
                     throw new LoginAttemptException("LDAP on and Auth_Register disabled");
